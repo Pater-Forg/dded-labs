@@ -26,13 +26,6 @@ compounds = [
     Compound(Name="Натрий хлорид", Formula="NaCl", MolecularWeight=58.44, Density=2165, State="Твердое тело")
 ]
 
-# Создаем три экземпляра публикаций
-papers = [
-    Paper(Author="Иванов И.И.", Journal="Химия сегодня", Number=45, Year=2020, Pages="12-25"),
-    Paper(Author="Петров П.П.", Journal="Физика для чайников", Number=12, Year=2018, Pages="100-112"),
-    Paper(Author="Сидоров С.С.", Journal="Юный химик", Number=3, Year=2019, Pages="50-60")
-]
-
 # Вывод информации о хим. соединениях в формате таблицы
 compoundsTableHeaders = [
     "Название", "Формула", "Молярная масса, г/моль", "Плотность, кг/м3", "Состояние"
@@ -40,9 +33,26 @@ compoundsTableHeaders = [
 print("\nИнформация о хим. соединениях в формате таблицы:")
 print(tabulate(compounds, headers=compoundsTableHeaders, tablefmt="grid"))
 
+# Выводим формулы всех веществ
+print("\nФормулы всех экземпляров Compound:")
+for compound in compounds:
+    print(compound.Formula)
+
+# Создаем три экземпляра публикаций
+papers = [
+    Paper(Author="Иванов И.И.", Journal="Химия сегодня", Number=45, Year=2020, Pages="12-25"),
+    Paper(Author="Петров П.П.", Journal="Физика для чайников", Number=12, Year=2018, Pages="100-112"),
+    Paper(Author="Сидоров С.С.", Journal="Юный химик", Number=3, Year=2019, Pages="50-60")
+]
+
 # Вывод информации о статьях в формате таблицы
 papersTableHeaders = [
     "Автор", "Журнал", "Номер журнала", "Год журнала", "Страницы журнала"
 ]
 print("\nИнформация о статьях в виде таблицы:")
 print(tabulate(papers, headers=papersTableHeaders, tablefmt="grid"))
+
+# Выводим информацию о статьях в формате journal(year) - author
+print("\nИнформация о статьях в формате journal(year) - author:")
+for paper in papers:
+    print(f"{paper.Journal}({paper.Year}) - {paper.Author}")
