@@ -30,24 +30,34 @@ class Thermodynamic:
     def gibbs_energy(self, T: float):
         return self.enthalpy(T) - T * self.entropy(T)
 
-def proccess(compound: Thermodynamic):
-    print(f'Обработка вещества {compound.Name}...')
+def proccess(compounds: list[Thermodynamic]):
     N = 20
-    T = np.linspace(compound.T_min, compound.T_max, N)
-    entalpy = [compound.enthalpy(T_i) for T_i in T]
-    entropy = [compound.entropy(T_i) for T_i in T]
-    gibbs_energy = [compound.gibbs_energy(T_i) for T_i in T]
+    fig, (entalpy_ax, entropy_ax, gibbs_ax) = plt.subplots(1, 3)
+    for compound in compounds:
+        T = np.linspace(compound.T_min, compound.T_max, N)
+        entalpy = [1e-3*compound.enthalpy(T_i) for T_i in T]
+        entalpy_ax.plot(T, entalpy, label=compound.Name)
+    for compound in compounds:
+        T = np.linspace(compound.T_min, compound.T_max, N)
+        entropy = [compound.entropy(T_i) for T_i in T]
+        entropy_ax.plot(T, entropy, label=compound.Name)
+    for compound in compounds:
+        T = np.linspace(compound.T_min, compound.T_max, N)
+        gibbs = [1e-3*compound.gibbs_energy(T_i) for T_i in T]
+        gibbs_ax.plot(T, gibbs, label=compound.Name)
 
-    plt.figure()
-    plt.title(compound.Name)
-    plt.plot(T, entalpy, label='entalpy')
-    plt.plot(T, entropy, label='entropy')
-    plt.plot(T, gibbs_energy, label='Gibbs energy')
-    plt.grid()
-    plt.legend()
-    plt.xlabel('T, K')
-    plt.ylabel('Y')
-    plt.savefig(f'unit-04/ex-3/plots/{compound.Name}.png')
+    entalpy_ax.set_title('H [kJ/mol]')
+    entalpy_ax.set_xlabel('T, K')
+    entalpy_ax.legend()
+    entropy_ax.set_title('S [J/mol/K]')
+    entropy_ax.set_xlabel('T, K')
+    entropy_ax.legend()
+    gibbs_ax.set_title('dG [kJ/mol]')
+    gibbs_ax.set_xlabel('T, K')
+    gibbs_ax.legend()
+    fig.set_figheight(7)
+    fig.set_figwidth(25)
+    fig.savefig('unit-04/ex-3/plot.png')
 
 def main():
     filepath = 'unit-04/ex-3/test-tab-04.csv'
@@ -57,11 +67,9 @@ def main():
     carbon_monoxide = Thermodynamic('Carbon Monoxide', filepath)
     carbon_dioxide = Thermodynamic('Carbon Dioxide', filepath)
 
-    proccess(hydrogen)
-    proccess(oxygen)
-    proccess(methane)
-    proccess(carbon_monoxide)
-    proccess(carbon_dioxide)
+    proccess([
+        hydrogen, oxygen, methane, carbon_monoxide, carbon_dioxide
+    ])
 
     print('Готово!')
 
