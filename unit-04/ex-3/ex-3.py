@@ -9,17 +9,17 @@ class Thermodynamic:
         data = pd.read_csv(filepath, usecols=cols)
         compound_data = data.loc[data['Compound'] == name]
         self.Name = name
-        self.Delta_H = compound_data['$\Delta H_f$']
-        self.Delta_S = compound_data['$S_f$']
-        self.A = compound_data['A']
-        self.B = compound_data['B']
-        self.C = compound_data['C']
-        self.D = compound_data['D']
-        self.T_min = compound_data['$T_1$']
-        self.T_max = compound_data['$T_2$']
+        self.Delta_H = float(compound_data['$\\Delta H_f$'].values[0])
+        self.Delta_S = float(compound_data['$S_f$'].values[0]) * 1e-3
+        self.A = float(compound_data['A'].values[0])
+        self.B = float(compound_data['B'].values[0])
+        self.C = float(compound_data['C'].values[0])
+        self.D = float(compound_data['D'].values[0])
+        self.T_min = float(compound_data['$T_1$'].values[0])
+        self.T_max = float(compound_data['$T_2$'].values[0])
 
     def heat_capacity(self, T: float) -> float:
-        return self.A + self.B * 1e-3 * T + self.C * 1e5 * np.pow(T, -2) + self.D * 1e-6 * np.pow(T, 2)
+        return 1e-3 * (self.A + self.B * 1e-3 * T + self.C * 1e5 * np.pow(T, -2) + self.D * 1e-6 * np.pow(T, 2))
 
     def enthalpy(self, T: float):
         return self.Delta_H + integrate.quad(self.heat_capacity, 298, T)[0]
@@ -35,15 +35,15 @@ def proccess(compounds: list[Thermodynamic]):
     fig, (entalpy_ax, entropy_ax, gibbs_ax) = plt.subplots(1, 3)
     for compound in compounds:
         T = np.linspace(compound.T_min, compound.T_max, N)
-        entalpy = [1e-3*compound.enthalpy(T_i) for T_i in T]
+        entalpy = [compound.enthalpy(T_i) for T_i in T]
         entalpy_ax.plot(T, entalpy, label=compound.Name)
     for compound in compounds:
         T = np.linspace(compound.T_min, compound.T_max, N)
-        entropy = [compound.entropy(T_i) for T_i in T]
+        entropy = [1000 * compound.entropy(T_i) for T_i in T]
         entropy_ax.plot(T, entropy, label=compound.Name)
     for compound in compounds:
         T = np.linspace(compound.T_min, compound.T_max, N)
-        gibbs = [1e-3*compound.gibbs_energy(T_i) for T_i in T]
+        gibbs = [compound.gibbs_energy(T_i) for T_i in T]
         gibbs_ax.plot(T, gibbs, label=compound.Name)
 
     entalpy_ax.set_title('H [kJ/mol]')
